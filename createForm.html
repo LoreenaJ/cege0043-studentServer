@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Simple Form Creation Example</title>
+</head>
+<body>
+	<h1>This is a simple form</h1>
+	<!-- add <p> to start a new paragraph and skip a line -->
+	<!-- add <br> to go to the next line but you need <br> twice to skip a line -->
+	<!-- the followings add text boxes -->
+	<p><label for="name">Name: </label><input type="text" size="25" id="name"/></p>
+	<p><label for="surname">Surname: </label><input type="text" size="30" id="surname"></p>
+	<p><label for="module">Module Title: </label><input type="text" size="60" id="module"></p>
+
+	<!-- the followings add a radio button -->
+	<p>Would you like lectures in the morning or afternoon?</p>
+		Morning: <input type="radio" name="time" id="morning"><br>
+		Afternoon: <input type="radio" name="time" id="afternoon"><br>
+
+	<!-- the followings add check boxes -->
+	<p>Which modules are you taking?</p>
+		CEGE0043: <input type="checkbox" name="modules" id = check2 value="CEGEG043" checked="yes"><br>
+		CEGE0094: <input type="checkbox" name="modules" id = check1 value="CEGEG094"><br>
+		CEGE0042: <input type="checkbox" name="modules" id = check3 value="CEGEG042"><br>
+		CEGE0044: <input type="checkbox" name="modules" id = check4 value="CEGEG044"><br>
+
+	<!-- the followings add a drop list -->
+	<p>What is your first language?</p>
+	<select name="languageselectbox" id="languageselectbox">
+		<option>English</option>
+		<option>French</option>
+		<option>Spanish</option>
+		<option>German</option>
+		<option>Italian</option>
+		<option>Mandarin</option>
+		<option>Japanese</option>
+		<option>Cantonese</option>
+		<option>Greek</option>
+		<option>Other</option>
+	</select>
+
+	<p>Specify coordinates for your submission:</p>
+	<label for="latitude">Latitude: </label><input type="text" size="20" id="latitude"><br>
+	<label for="latitude">Longitude: </label><input type="text" size="20" id="longitude">
+
+
+	<!-- the following adds a button to load the data -->
+	<p><button id="startUpload" onclick="startDataUpload();">Start Data Upload</button></p>
+	<div id="dataUploadResult">The result of the upload goes here</div>
+
+	<!-- the following calls the js file to process the data -->
+	<script src="uploadData.js"></script>
+</body>
+</html>
