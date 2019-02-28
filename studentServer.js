@@ -8,6 +8,15 @@ var app = express();
 var http = require('http');
 var httpServer = http.createServer(app);
 
+httpServer.listen(4480);
+
+// adding functionality to process the form data
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+
 // import required database connectivity code to set up database connection
 var fs = require('fs');
 var pg = require('pg');
@@ -23,15 +32,6 @@ for (var i = 0;i < configarray.length; i++){
 }
 
 var pool = new pg.Pool(config);
-
-// adding functionality to process the form data
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(bodyParser.json());
-
-httpServer.listen(4480);
 
 //adding functionality to test out the connection
 app.get('/postgistest',function(req,res){
