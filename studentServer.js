@@ -38,49 +38,90 @@ app.use(function(req, res, next) {
 	next();
 });
 
-app.post('/uploadData',function(req,res){
-	// note that we are using POST here as we are uploading data
-	// so the parameters form part of the BODY of the request rather than the RESTful API
-	console.dir(req.body);
+app.post('/reflectData',function(req,res){
+  // note that we are using POST here as we are uploading data
+  // so the parameters form part of the BODY of the request rather than the RESTful API
+  console.dir(req.body);
 
-	pool.connect(function(err,client,done){
-		if(err){
-			console.log("not able to get connection "+ err);
-			res.status(400).send(err);
-		}
-
-		var name = req.body.name;
-		var surname = req.body.surname;
-		var moduletitle = req.body.moduletitle;
-		var portnum = req.body.port_id;
-		var language = req.body.language;
-		var modulelist = req.body.modulelist;
-		var lecturetime = req.body.lecturetime;
-
-		var geometrystring = "st geomfromtext ('POINT("+req.body.longitude+" "+req.body.latitude+")')";
-
-		var querystring = "INSERT into formdata (name,surname,moduletitle,port_id,language,modulelist,lecturetime,geom) values ($1,$2,$3,$4,$5,$6,$7,";
-		var querystring = querystring+geometrystring+")";
-
-		console.log(querystring);
-
-		client.query(querystring,[name,surname,moduletitle,portnum,language,modulelist,lecturetime],function(err,result){
-			done();
-			if(err){
-				console.log(err);
-				res.status(400).send(err);
-			}
-			res.status(200).send("row inserted");
-		});
-	});
+  // for now, just echo the request back to the client
+  res.send(req.body);
 });
 
-// adding functionality to log the requests
-app.use(function(req,res,next){
-	var filename = path.basename(req.url);
-	var extension = path.extname(filename);
-	console.log('The file '+filename+' was requested.');
-	next();
+app.get('/postgistest', function (req,res) {
+pool.connect(function(err,client,done) {
+if(err){
+console.log("not able to get connection "+ err);
+res.status(400).send(err);
+}
+client.query('SELECT name FROM london_poi' ,function(err,result) {
+done();
+if(err){
+console.log(err);
+res.status(400).send(err);
+}
+res.status(200).send(result.rows);
+});
+});
+
+app.post('/uploadData',function(req,res){
+// note that we are using POST here as we are uploading data
+// so the parameters form part of the BODY of the request rather than the RESTful API
+console.dir(req.body);
+pool.connect(function(err,client,done) {
+if(err){
+console.log("not able to get connection "+ err);
+res.status(400).send(err);
+}
+var name = req.body.name;
+var surname = req.body.surname;
+var module = req.body.module;
+var portnum = req.body.port_id;
+var language = req.body.language;
+var modulelist = req.body.modulelist;
+var lecturetime = req.body.lecturetime;
+var geometrystring = "st_geomfromtext('POINT("+req.body.longitude + " "+
+req.body.latitude + ")')";
+var querystring = "INSERT into formdata (name,surname,module, port_id,language, modulelist, lecturetime, geom) values ($1,$2,$3,$4,$5,$6,$7,";
+var querystring = querystring + geometrystring + ")";
+console.log(querystring);
+client.query( querystring,[name,surname,module, portnum, language,
+modulelist, lecturetime],function(err,result) {
+done();
+if(err){
+console.log(err);
+res.status(400).send(err);
+}
+res.status(200).send("row inserted");
+});
+});
+});
+
+//viewing some points of interest from the database on the Leaflet map
+app.get('/getFormData/:port_id', function (req,res) {
+pool.connect(function(err,client,done) {
+if(err){
+console.log("not able to get connection "+ err);
+res.status(400).send(err);
+}
+// use the inbuilt geoJSON functionality
+// and create the required geoJSON format using a query adapted from here:http://www.postgresonline.com/journal/archives/267-Creating-GeoJSON-Feature-Collections-with-JSON-and-PostGIS-functions.html, accessed 4th January 2018
+// note that query needs to be a single string with no line breaks so builtit up bit by bit
+var querystring = " SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM ";
+querystring = querystring + "(SELECT 'Feature' As type, ST_AsGeoJSON(lg.geom)::json As geometry, ";
+querystring = querystring + "row_to_json((SELECT l FROM (SELECT name,surname, port_id) As l ";
+querystring = querystring + " )) As properties";
+querystring = querystring + " FROM formdata As lg where lg.port_id= '"+req.params.port_id + "' limit 100 ) As f ";
+console.log(querystring);
+client.query(querystring,function(err,result){
+//call `done()` to release the client back to the pool
+done();
+if(err){
+console.log(err);
+res.status(400).send(err);
+}
+res.status(200).send(result.rows);
+});
+});
 });
 
 app.get('/', function (req, res) {
