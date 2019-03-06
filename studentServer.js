@@ -47,6 +47,22 @@ app.post('/reflectData',function(req,res){
   res.send(req.body);
 });
 
+app.get('/postgistest', function (req,res) {
+pool.connect(function(err,client,done) {
+if(err){
+console.log("not able to get connection "+ err);
+res.status(400).send(err);
+}
+client.query('SELECT name FROM london_poi' ,function(err,result) {
+done();
+if(err){
+console.log(err);
+res.status(400).send(err);
+}
+res.status(200).send(result.rows);
+});
+});
+
 app.post('/uploadData',function(req,res){
 // note that we are using POST here as we are uploading data
 // so the parameters form part of the BODY of the request rather than the RESTful API
