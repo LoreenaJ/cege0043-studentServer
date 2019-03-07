@@ -157,7 +157,7 @@ var colnames = "";
 // use string_agg to generate a comma separated list that can then be pasted into the next query
 var tablename = req.params.tablename;
 var geomcolumn = req.params.geomcolumn;
-var querystring = "select string_agg(colname,',') from ( selectcolumn_name as colname ";
+var querystring = "select string_agg(colname,',') from ( select column_name as colname ";
 querystring = querystring + " FROM information_schema.columns as colname ";
 querystring = querystring + " where table_name =$1";
 querystring = querystring + " and column_name <> $2 and data_type <> 'USER-DEFINED') as cols ";
