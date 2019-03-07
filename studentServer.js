@@ -87,7 +87,7 @@ app.post('/uploadData', function (req, res) {
         var language = req.body.language;
         var modulelist = req.body.modulelist;
         var lecturetime = req.body.lecturetime;
-        var geometrystring = "st_geomfromtext('POINT("+req.body.longitude+ " "+req.body.latitude +")',)";
+        var geometrystring = "st_geomfromtext('POINT("+req.body.longitude+ " "+req.body.latitude +")')";
 
         var querystring = "INSERT into formdata (name,surname,module, port_id,language, modulelist, lecturetime, geom) values ($1,$2,$3,$4,$5,$6,$7,";
         var querystring = querystring + geometrystring + ")";
